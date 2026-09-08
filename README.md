@@ -2,6 +2,6 @@
 
 ## Documentação
 
-* [Histórias de Usuário](historias-de-usuario.md)
-* [Código fonte do Diagrama (PlantUML)](diagrama-casos-de-uso/plantuml.txt)
-![Diagrama de Casos de Uso](diagrama-casos-de-uso/diagrama.png)
+* [Histórias de Usuário](documentacao/historias-de-usuario.md)
+* [Código fonte do Diagrama (PlantUML)](documentacao/plantuml.txt)
+![Diagrama de Casos de Uso](documentacao/diagrama.png)
