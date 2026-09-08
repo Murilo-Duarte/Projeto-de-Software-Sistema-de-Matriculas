@@ -1,0 +1,50 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Aluno" as aluno
+actor "Professor" as prof
+actor "Secretaria" as sec
+actor "Sistema de Cobranças" as cobranca <<Sistema>>
+
+rectangle "Sistema de Matrículas" {
+  usecase "Realizar Login" as UC_Login
+  
+  usecase "Gerar Currículo do Semestre" as UC_GerarCurriculo
+  usecase "Manter Info (Disciplinas/Prof/Alunos)" as UC_ManterInfo
+  
+  usecase "Efetuar Matrícula" as UC_Matricular
+  usecase "Cancelar Matrícula" as UC_Cancelar
+  
+  usecase "Consultar Alunos Matriculados" as UC_Consultar
+  usecase "Notificar Cobrança" as UC_Notificar
+}
+
+' Relacionamentos Principais
+sec --> UC_GerarCurriculo
+sec --> UC_ManterInfo
+
+aluno --> UC_Matricular
+aluno --> UC_Cancelar
+
+prof --> UC_Consultar
+
+' Relacionamento com Sistema Externo
+UC_Matricular ..> UC_Notificar : <<include>>
+UC_Notificar --> cobranca
+
+' Dependências de Login
+UC_GerarCurriculo ..> UC_Login : <<include>>
+UC_ManterInfo ..> UC_Login : <<include>>
+UC_Matricular ..> UC_Login : <<include>>
+UC_Cancelar ..> UC_Login : <<include>>
+UC_Consultar ..> UC_Login : <<include>>
+
+note bottom of UC_Matricular
+  Regras de Negócio:
+  - 4 disciplinas 1ª opção (obrigatórias)
+  - 2 disciplinas alternativas (optativas)
+  - Cancelamento < 3 alunos
+  - Encerramento automático ao atingir 60 alunos
+end note
+@enduml
