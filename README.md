@@ -1,5 +1,11 @@
 # Projeto-de-Software-Sistema-de-Matriculas
 
+##Integrantes
+-Bernardo Augusto Pereira 
+-Bruno Kenji fantucci
+-João Gabriel
+-Murilo Duarte Moura
+
 ## Documentação
 
 * [Histórias de Usuário](documentacao/historias-de-usuario.md)
