@@ -1,0 +1,67 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Aluno" as Aluno
+actor "Professor" as Professor
+actor "Secretaria" as Secretaria
+actor "Sistema de Cobranças" as SistemaCobrancas <<Sistema Externo>>
+
+rectangle "Sistema de Matrículas" {
+  usecase "Realizar Login" as UC_Login
+  usecase "Gerar Currículo do Semestre" as UC_GerarCurriculo
+  usecase "Manter Cursos" as UC_ManterCursos
+  usecase "Manter Disciplinas" as UC_ManterDisciplinas
+  usecase "Manter Alunos" as UC_ManterAlunos
+  usecase "Manter Professores" as UC_ManterProfessores
+  usecase "Definir Período de Matrículas" as UC_DefinirPeriodo
+  usecase "Alocar Professor em Disciplina" as UC_AlocarProfessor
+  usecase "Efetuar Matrícula" as UC_EfetuarMatricula
+  usecase "Cancelar Matrícula" as UC_CancelarMatricula
+  usecase "Consultar Alunos Matriculados" as UC_ConsultarAlunos
+  usecase "Encerrar Período de Matrículas" as UC_EncerrarPeriodo
+  usecase "Notificar Cobrança" as UC_NotificarCobranca
+}
+
+Secretaria --> UC_GerarCurriculo
+Secretaria --> UC_ManterCursos
+Secretaria --> UC_ManterDisciplinas
+Secretaria --> UC_ManterAlunos
+Secretaria --> UC_ManterProfessores
+Secretaria --> UC_DefinirPeriodo
+Secretaria --> UC_AlocarProfessor
+Secretaria --> UC_EncerrarPeriodo
+
+Aluno --> UC_EfetuarMatricula
+Aluno --> UC_CancelarMatricula
+
+Professor --> UC_ConsultarAlunos
+
+UC_GerarCurriculo ..> UC_Login : <<include>>
+UC_ManterCursos ..> UC_Login : <<include>>
+UC_ManterDisciplinas ..> UC_Login : <<include>>
+UC_ManterAlunos ..> UC_Login : <<include>>
+UC_ManterProfessores ..> UC_Login : <<include>>
+UC_DefinirPeriodo ..> UC_Login : <<include>>
+UC_AlocarProfessor ..> UC_Login : <<include>>
+UC_EncerrarPeriodo ..> UC_Login : <<include>>
+UC_EfetuarMatricula ..> UC_Login : <<include>>
+UC_CancelarMatricula ..> UC_Login : <<include>>
+UC_ConsultarAlunos ..> UC_Login : <<include>>
+
+UC_EfetuarMatricula ..> UC_NotificarCobranca : <<include>>
+UC_NotificarCobranca --> SistemaCobrancas
+
+note bottom of UC_EfetuarMatricula
+  Regras:
+  - até 4 disciplinas obrigatórias
+  - até 2 disciplinas optativas
+  - limite de 60 alunos por disciplina
+  - permitido somente no período de matrícula
+end note
+
+note bottom of UC_EncerrarPeriodo
+  Disciplinas com menos de 3 alunos
+  devem ser canceladas.
+end note
+@enduml

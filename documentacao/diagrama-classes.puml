@@ -1,0 +1,145 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "br.pucminas.matriculas.model" {
+  abstract class Usuario {
+    - id: String
+    - nome: String
+    - email: String
+    - senha: String
+    + autenticar(senha: String): boolean
+    + alterarSenha(novaSenha: String): void
+  }
+
+  class Aluno {
+    - matricula: String
+    - curso: Curso
+    - matriculas: List<Matricula>
+    - historico: List<Disciplina>
+    + solicitarMatricula(disciplinasObrigatorias: List<Disciplina>, disciplinasOptativas: List<Disciplina>): void
+    + cancelarMatricula(matricula: Matricula): void
+  }
+
+  class Professor {
+    - registro: String
+    - disciplinas: List<Disciplina>
+    + consultarAlunosMatriculados(disciplina: Disciplina): List<Aluno>
+  }
+
+  class Secretaria {
+    - setor: String
+    + gerarCurriculo(semestre: String): CurriculoSemestre
+    + cadastrarCurso(curso: Curso): void
+    + cadastrarDisciplina(disciplina: Disciplina): void
+    + alocarProfessor(professor: Professor, disciplina: Disciplina): void
+  }
+
+  class Curso {
+    - codigo: String
+    - nome: String
+    - totalCreditos: int
+    - disciplinas: List<Disciplina>
+    + adicionarDisciplina(disciplina: Disciplina): void
+    + removerDisciplina(disciplina: Disciplina): void
+  }
+
+  class Disciplina {
+    - codigo: String
+    - nome: String
+    - creditos: int
+    - cargaHoraria: int
+    - professor: Professor
+    - horario: Horario
+    - status: StatusDisciplina
+    - alunosMatriculados: List<Aluno>
+    + temVaga(): boolean
+    + possuiMinimoAlunos(): boolean
+    + ativar(): void
+    + cancelar(): void
+  }
+
+  class Matricula {
+    - aluno: Aluno
+    - disciplina: Disciplina
+    - tipo: TipoMatricula
+    - data: LocalDateTime
+    - ativa: boolean
+    + confirmar(): void
+    + cancelar(): void
+  }
+
+  class CurriculoSemestre {
+    - semestre: String
+    - cursos: List<Curso>
+    - disciplinasOfertadas: List<Disciplina>
+    + adicionarCurso(curso: Curso): void
+    + ofertarDisciplina(disciplina: Disciplina): void
+  }
+
+  class PeriodoMatricula {
+    - inicio: LocalDateTime
+    - fim: LocalDateTime
+    + estaAberto(dataHora: LocalDateTime): boolean
+  }
+
+  class Horario {
+    - diaSemana: String
+    - horaInicio: LocalTime
+    - horaFim: LocalTime
+    + conflitaCom(outro: Horario): boolean
+  }
+
+  enum TipoMatricula {
+    OBRIGATORIA
+    OPTATIVA
+  }
+
+  enum StatusDisciplina {
+    PLANEJADA
+    ATIVA
+    CANCELADA
+    LOTADA
+  }
+}
+
+package "br.pucminas.matriculas.service" {
+  class SistemaMatriculas {
+    - cursos: List<Curso>
+    - alunos: List<Aluno>
+    - professores: List<Professor>
+    - periodoMatricula: PeriodoMatricula
+    - sistemaCobrancas: SistemaCobrancasGateway
+    + realizarLogin(email: String, senha: String): Usuario
+    + gerarCurriculoSemestre(semestre: String): CurriculoSemestre
+    + efetuarMatricula(aluno: Aluno, obrigatorias: List<Disciplina>, optativas: List<Disciplina>): List<Matricula>
+    + cancelarMatricula(matricula: Matricula): void
+    + encerrarPeriodoMatriculas(): void
+    + listarAlunosMatriculados(professor: Professor, disciplina: Disciplina): List<Aluno>
+  }
+}
+
+package "br.pucminas.matriculas.integracao" {
+  interface SistemaCobrancasGateway {
+    + notificarMatricula(aluno: Aluno, matriculas: List<Matricula>): void
+    + notificarCancelamento(matricula: Matricula): void
+  }
+}
+
+Usuario <|-- Aluno
+Usuario <|-- Professor
+Usuario <|-- Secretaria
+
+Curso "1" o-- "0..*" Disciplina
+Aluno "1" --> "1" Curso
+Aluno "1" *-- "0..*" Matricula
+Matricula "1" --> "1" Disciplina
+Disciplina "0..*" --> "0..1" Professor
+Disciplina "1" --> "1" Horario
+Disciplina "1" --> "1" StatusDisciplina
+Matricula "1" --> "1" TipoMatricula
+CurriculoSemestre "1" o-- "0..*" Curso
+CurriculoSemestre "1" o-- "0..*" Disciplina
+SistemaMatriculas --> SistemaCobrancasGateway
+SistemaMatriculas --> PeriodoMatricula
+@enduml
