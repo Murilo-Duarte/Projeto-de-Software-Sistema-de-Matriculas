@@ -1,0 +1,8 @@
+PERIODO|2026-09-21T17:07:17.287416800|2026-09-29T17:07:17.287416800
+SECRETARIA|S1|Secretaria Demo|secretaria@sistema|123|Academico
+CURSO|C1|Sistemas de Informacao|3000
+PROFESSOR|P1|Professor Demo|professor@sistema|123|P1
+ALUNO|A1|Aluno Demo|aluno@sistema|123|A1|C1
+DISCIPLINA|C1|D1|Projeto de Software|4|80|Segunda|19:00|20:40|P1|PLANEJADA
+DISCIPLINA|C1|D2|Banco de Dados|4|80|Terca|19:00|20:40||PLANEJADA
+DISCIPLINA|C1|D3|Algoritmos|4|80|Quarta|19:00|20:40||PLANEJADA
