@@ -39,6 +39,14 @@ public class Disciplina {
 
     public void cancelar() {
         this.status = StatusDisciplina.CANCELADA;
+        for (Aluno aluno : alunosMatriculados) {
+            for (Matricula matricula : aluno.getMatriculas()) {
+                if (matricula.getDisciplina() == this && matricula.isAtiva()) {
+                    matricula.cancelar();
+                }
+            }
+        }
+        alunosMatriculados.clear();
     }
 
     public String getCodigo() {

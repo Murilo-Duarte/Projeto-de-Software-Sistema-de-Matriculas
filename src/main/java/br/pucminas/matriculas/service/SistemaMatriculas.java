@@ -10,6 +10,7 @@ import br.pucminas.matriculas.model.Matricula;
 import br.pucminas.matriculas.model.PeriodoMatricula;
 import br.pucminas.matriculas.model.Professor;
 import br.pucminas.matriculas.model.Secretaria;
+import br.pucminas.matriculas.model.StatusDisciplina;
 import br.pucminas.matriculas.model.TipoMatricula;
 import br.pucminas.matriculas.model.Usuario;
 
@@ -30,6 +31,18 @@ public class SistemaMatriculas {
         this.alunos = new ArrayList<>();
         this.professores = new ArrayList<>();
         this.secretarias = new ArrayList<>();
+    }
+
+    public void cadastrarCurso(Curso curso) {
+        for (Curso existente : cursos) {
+            if (existente.getCodigo().trim().equalsIgnoreCase(curso.getCodigo().trim())) {
+                throw new RegraNegocioException("Curso ja cadastrado");
+            }
+            if (existente.getNome().trim().equalsIgnoreCase(curso.getNome().trim())) {
+                throw new RegraNegocioException("Ja existe um curso com esse nome");
+            }
+        }
+        cursos.add(curso);
     }
 
     public Usuario realizarLogin(String email, String senha) {
@@ -106,12 +119,28 @@ public class SistemaMatriculas {
     }
 
     public void encerrarPeriodoMatriculas() {
+        if (periodoMatricula != null) {
+            periodoMatricula.encerrar();
+        }
         for (Curso curso : cursos) {
             for (Disciplina disciplina : curso.getDisciplinas()) {
-                if (disciplina.possuiMinimoAlunos()) {
+                if (disciplina.getStatus() != StatusDisciplina.CANCELADA && disciplina.possuiMinimoAlunos()) {
                     disciplina.ativar();
                 } else {
+                    List<Matricula> canceladas = new ArrayList<>();
+                    for (Aluno aluno : disciplina.getAlunosMatriculados()) {
+                        for (Matricula matricula : aluno.getMatriculas()) {
+                            if (matricula.getDisciplina() == disciplina && matricula.isAtiva()) {
+                                canceladas.add(matricula);
+                            }
+                        }
+                    }
                     disciplina.cancelar();
+                    if (sistemaCobrancas != null) {
+                        for (Matricula matricula : canceladas) {
+                            sistemaCobrancas.notificarCancelamento(matricula);
+                        }
+                    }
                 }
             }
         }
@@ -161,6 +190,14 @@ public class SistemaMatriculas {
         for (Disciplina disciplina : selecionadas) {
             if (disciplina == null) {
                 throw new RegraNegocioException("Disciplina invalida");
+            }
+
+            if (disciplina.getProfessor() == null) {
+                throw new RegraNegocioException("Disciplina sem professor alocado");
+            }
+
+            if (disciplina.getStatus() == StatusDisciplina.CANCELADA) {
+                throw new RegraNegocioException("Disciplina cancelada");
             }
 
             if (selecionadas.indexOf(disciplina) != selecionadas.lastIndexOf(disciplina)) {

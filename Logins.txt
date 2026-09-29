@@ -1,0 +1,13 @@
+Logins de demonstracao
+
+Secretaria
+Email: secretaria@sistema
+Senha: 123
+
+Aluno
+Email: aluno@sistema
+Senha: 123
+
+Professor
+Email: professor@sistema
+Senha: 123

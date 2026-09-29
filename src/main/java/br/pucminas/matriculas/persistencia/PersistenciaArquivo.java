@@ -101,7 +101,8 @@ public class PersistenciaArquivo {
             if (sistema.getPeriodoMatricula() != null) {
                 linhas.add("PERIODO"
                         + "|" + sistema.getPeriodoMatricula().getInicio()
-                        + "|" + sistema.getPeriodoMatricula().getFim());
+                        + "|" + sistema.getPeriodoMatricula().getFim()
+                        + "|" + sistema.getPeriodoMatricula().isEncerrado());
             }
 
             for (Secretaria secretaria : sistema.getSecretarias()) {
@@ -192,6 +193,9 @@ public class PersistenciaArquivo {
                 LocalDateTime.parse(campos[1]),
                 LocalDateTime.parse(campos[2])
         ));
+        if (campos.length > 3 && Boolean.parseBoolean(campos[3])) {
+            sistema.getPeriodoMatricula().encerrar();
+        }
     }
 
     private void carregarCurso(SistemaMatriculas sistema, Map<String, Curso> cursosPorCodigo, String[] campos) {

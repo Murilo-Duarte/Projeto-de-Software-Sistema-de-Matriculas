@@ -155,7 +155,7 @@ public class Aplicacao {
 
             try {
                 switch (opcao) {
-                    case "1" -> listarDisciplinas();
+                    case "1" -> listarDisciplinas(true);
                     case "2" -> efetuarMatricula(aluno);
                     case "3" -> listarMatriculasAluno(aluno);
                     case "4" -> cancelarMatricula(aluno);
@@ -221,7 +221,7 @@ public class Aplicacao {
             System.out.println(professor.getRegistro() + " " + professor.getNome() + " " + professor.getEmail());
         }
 
-        listarDisciplinas();
+        listarDisciplinas(false);
     }
 
     private void cadastrarCurso() {
@@ -229,12 +229,7 @@ public class Aplicacao {
         String nome = lerTextoObrigatorio("Nome do curso");
         int creditos = lerInteiroPositivo("Total de creditos");
 
-        if (buscarCursoPorCodigo(codigo) != null) {
-            mostrarErro("Curso ja cadastrado");
-            return;
-        }
-
-        sistema.getCursos().add(new Curso(codigo, nome, creditos));
+        sistema.cadastrarCurso(new Curso(codigo, nome, creditos));
         salvarDados();
         System.out.println("Curso cadastrado");
     }
@@ -380,12 +375,15 @@ public class Aplicacao {
         }
     }
 
-    private void listarDisciplinas() {
+    private void listarDisciplinas(boolean somenteComProfessor) {
         mostrarTitulo("Disciplinas");
 
         List<Disciplina> disciplinas = listarTodasDisciplinas();
+        if (somenteComProfessor) {
+            disciplinas.removeIf(disciplina -> disciplina.getProfessor() == null);
+        }
         if (disciplinas.isEmpty()) {
-            System.out.println("Nenhuma disciplina cadastrada");
+            System.out.println(somenteComProfessor ? "Nenhuma disciplina disponivel" : "Nenhuma disciplina cadastrada");
             return;
         }
 
@@ -411,7 +409,7 @@ public class Aplicacao {
             return;
         }
 
-        listarDisciplinas();
+        listarDisciplinas(true);
 
         List<Disciplina> obrigatorias = selecionarDisciplinas("Codigos obrigatorias separados por virgula");
         List<Disciplina> optativas = selecionarDisciplinas("Codigos optativas separados por virgula");
