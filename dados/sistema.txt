@@ -1,8 +1,19 @@
-PERIODO|2025-01-01T12:00|2025-01-01T13:00
+PERIODO|2026-09-28T20:00|2026-09-30T19:00|true
 SECRETARIA|S1|Secretaria Demo|secretaria@sistema|123|Academico
+SECRETARIA|S2|Bruno Kenji|secretaria.bruno@sistema|123|Atendimento
 CURSO|C1|Sistemas de Informacao|3000
+CURSO|Teste 01|Teste 01|50
+CURSO|C2|Engenharia de Software|3200
 PROFESSOR|P1|Professor Demo|professor@sistema|123|P1
+PROFESSOR|P2|Murilo|professor2@sistema|123|2
+PROFESSOR|P3|Murilo|professor.murilo@sistema|123|P3
 ALUNO|A1|Aluno Demo|aluno@sistema|123|A1|C1
-DISCIPLINA|C1|D1|Projeto de Software|4|80|Segunda|19:00|20:40|P1|PLANEJADA
-DISCIPLINA|C1|D2|Banco de Dados|4|80|Terca|19:00|20:40||PLANEJADA
-DISCIPLINA|C1|D3|Algoritmos|4|80|Quarta|19:00|20:40||PLANEJADA
+ALUNO|A2|Bernardo|bernardo@sistema|123|A2|C1
+ALUNO|A3|Murilo|murilo@sistema|123|A3|C1
+ALUNO|A4|Bruno Kenji|bruno@sistema|123|A4|C1
+ALUNO|A5|Bernardo Oliveira|bernardo.oliveira@sistema|123|A5|C2
+DISCIPLINA|C1|D1|Projeto de Software|4|80|Segunda|19:00|20:40|P1|CANCELADA
+DISCIPLINA|C1|D2|Banco de Dados|4|80|Terca|19:00|20:40||CANCELADA
+DISCIPLINA|C1|D3|Algoritmos|4|80|Quarta|19:00|20:40||CANCELADA
+DISCIPLINA|C2|D4|Engenharia de Requisitos|4|80|Quinta|19:00|20:40|P3|PLANEJADA
+MATRICULA|A5|D4|OBRIGATORIA|2026-09-28T20:10|true
