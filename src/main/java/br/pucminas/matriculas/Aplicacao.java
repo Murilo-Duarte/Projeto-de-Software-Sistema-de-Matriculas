@@ -1,6 +1,17 @@
 package br.pucminas.matriculas;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Scanner;
+
 import br.pucminas.matriculas.exception.RegraNegocioException;
+import br.pucminas.matriculas.integracao.SistemaCobrancasMock;
 import br.pucminas.matriculas.model.Aluno;
 import br.pucminas.matriculas.model.Curso;
 import br.pucminas.matriculas.model.Disciplina;
@@ -13,15 +24,6 @@ import br.pucminas.matriculas.model.Usuario;
 import br.pucminas.matriculas.persistencia.PersistenciaArquivo;
 import br.pucminas.matriculas.service.SistemaMatriculas;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
-
 public class Aplicacao {
     private static final DateTimeFormatter FORMATO_DATA_HORA = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -33,6 +35,7 @@ public class Aplicacao {
         this.entrada = new Scanner(System.in);
         this.sistema = new SistemaMatriculas();
         this.persistencia = new PersistenciaArquivo("dados/sistema.txt");
+        this.sistema.setSistemaCobrancas(new SistemaCobrancasMock());
 
         if (!persistencia.carregar(sistema)) {
             carregarDadosIniciais();
@@ -48,6 +51,7 @@ public class Aplicacao {
         boolean executando = true;
 
         while (executando) {
+            limparTerminal();
             mostrarTitulo("Sistema de Matriculas");
             System.out.println("1 Login");
             System.out.println("2 Sair");
@@ -61,6 +65,10 @@ public class Aplicacao {
                     executando = false;
                 }
                 default -> mostrarErro("Opcao invalida");
+            }
+
+            if (executando) {
+                aguardarContinuacao();
             }
         }
     }
@@ -91,6 +99,7 @@ public class Aplicacao {
         boolean logado = true;
 
         while (logado) {
+            limparTerminal();
             mostrarTitulo("Menu Secretaria");
             System.out.println("1 Listar dados");
             System.out.println("2 Cadastrar curso");
@@ -101,7 +110,8 @@ public class Aplicacao {
             System.out.println("7 Definir periodo de matricula");
             System.out.println("8 Encerrar periodo");
             System.out.println("9 Relatorio de turmas");
-            System.out.println("0 Logout");
+            System.out.println("0 Voltar ao menu anterior");
+            System.out.println("10 Logout");
 
             String opcao = lerTexto("Opcao");
 
@@ -116,12 +126,15 @@ public class Aplicacao {
                     case "7" -> definirPeriodoMatricula();
                     case "8" -> encerrarPeriodo();
                     case "9" -> relatorioTurmas();
-                    case "0" -> logado = false;
+                    case "0" -> logado = voltarMenuAnterior();
+                    case "10" -> logado = realizarLogout();
                     default -> mostrarErro("Opcao invalida");
                 }
             } catch (RegraNegocioException excecao) {
                 mostrarErro(excecao.getMessage());
             }
+
+            aguardarContinuacao();
         }
     }
 
@@ -129,12 +142,14 @@ public class Aplicacao {
         boolean logado = true;
 
         while (logado) {
+            limparTerminal();
             mostrarTitulo("Menu Aluno");
             System.out.println("1 Listar disciplinas");
             System.out.println("2 Efetuar matricula");
             System.out.println("3 Minhas matriculas");
             System.out.println("4 Cancelar matricula");
-            System.out.println("0 Logout");
+            System.out.println("0 Voltar ao menu anterior");
+            System.out.println("5 Logout");
 
             String opcao = lerTexto("Opcao");
 
@@ -144,12 +159,15 @@ public class Aplicacao {
                     case "2" -> efetuarMatricula(aluno);
                     case "3" -> listarMatriculasAluno(aluno);
                     case "4" -> cancelarMatricula(aluno);
-                    case "0" -> logado = false;
+                    case "0" -> logado = voltarMenuAnterior();
+                    case "5" -> logado = realizarLogout();
                     default -> mostrarErro("Opcao invalida");
                 }
             } catch (RegraNegocioException excecao) {
                 mostrarErro(excecao.getMessage());
             }
+
+            aguardarContinuacao();
         }
     }
 
@@ -157,19 +175,24 @@ public class Aplicacao {
         boolean logado = true;
 
         while (logado) {
+            limparTerminal();
             mostrarTitulo("Menu Professor");
             System.out.println("1 Minhas disciplinas");
             System.out.println("2 Consultar alunos");
-            System.out.println("0 Logout");
+            System.out.println("0 Voltar ao menu anterior");
+            System.out.println("3 Logout");
 
             String opcao = lerTexto("Opcao");
 
             switch (opcao) {
                 case "1" -> listarDisciplinasProfessor(professor);
                 case "2" -> consultarAlunosProfessor(professor);
-                case "0" -> logado = false;
+                case "0" -> logado = voltarMenuAnterior();
+                case "3" -> logado = realizarLogout();
                 default -> mostrarErro("Opcao invalida");
             }
+
+            aguardarContinuacao();
         }
     }
 
@@ -607,6 +630,44 @@ public class Aplicacao {
 
     private void mostrarErro(String mensagem) {
         System.out.println("Erro " + mensagem);
+    }
+
+    private boolean voltarMenuAnterior() {
+        System.out.println("Voltando ao menu anterior");
+        return false;
+    }
+
+    private boolean realizarLogout() {
+        System.out.println("Logout realizado");
+        return false;
+    }
+
+    private void aguardarContinuacao() {
+        System.out.println();
+        System.out.println("Pressione ENTER para continuar");
+        entrada.nextLine();
+    }
+
+    private void limparTerminal() {
+        String sistemaOperacional = System.getProperty("os.name").toLowerCase();
+        String[] comando = sistemaOperacional.contains("win")
+                ? new String[]{"cmd", "/c", "cls"}
+                : new String[]{"clear"};
+
+        try {
+            Process processo = new ProcessBuilder(comando).inheritIO().start();
+            processo.waitFor();
+        } catch (IOException excecao) {
+            usarLimpezaAnsi();
+        } catch (InterruptedException excecao) {
+            Thread.currentThread().interrupt();
+            usarLimpezaAnsi();
+        }
+    }
+
+    private void usarLimpezaAnsi() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 
     private void salvarDados() {
