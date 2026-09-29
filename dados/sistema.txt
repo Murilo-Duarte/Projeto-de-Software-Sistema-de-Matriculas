@@ -1,4 +1,4 @@
-PERIODO|2026-09-21T17:07:17.287416800|2026-09-29T17:07:17.287416800
+PERIODO|2025-01-01T12:00|2025-01-01T13:00
 SECRETARIA|S1|Secretaria Demo|secretaria@sistema|123|Academico
 CURSO|C1|Sistemas de Informacao|3000
 PROFESSOR|P1|Professor Demo|professor@sistema|123|P1
